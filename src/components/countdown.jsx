@@ -88,8 +88,21 @@ export default function Countdown({ targetDate, onCountdownEnd }) {
 
   return (
     <div className="flex flex-col items-center justify-center relative overflow-hidden">
+      {/* Background Video */}
+      <video
+        autoPlay
+        loop
+        
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover z-0 opacity-80"
+        src="/your-file.mp4"
+      />
+
+      {/* Overlay to ensure text readability */}
+      <div className="absolute inset-0 bg-black/20 z-0" />
+
       {/* Floating sparkles background */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
         {Array.from({ length: 15 }).map((_, i) => (
           <motion.div
             key={i}
@@ -117,8 +130,9 @@ export default function Countdown({ targetDate, onCountdownEnd }) {
         ))}
       </div>
 
+      {/* Updated Heading */}
       <motion.h1
-        className="text-3xl md:text-4xl font-bold text-center min-h-20 sm:min-h-11 mb-8 bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-purple-600"
+        className="text-3xl md:text-4xl font-bold text-center min-h-20 sm:min-h-11 mb-8 bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-purple-600 z-20"
         initial={{ scale: 0.95, y: 20 }}
         animate={{ 
           scale: [1, 1.03, 1],
@@ -131,10 +145,10 @@ export default function Countdown({ targetDate, onCountdownEnd }) {
           ease: "easeInOut",
         }}
       >
-        Your Special Day is Almost Here 💕
+        Until Birthday Comes, Keep Watching This
       </motion.h1>
 
-      <div className="flex flex-wrap justify-center gap-5 mb-10">
+      <div className="flex flex-wrap justify-center gap-5 mb-10 z-20">
         {Object.keys(timeLeft).length > 0 ? (
           Object.entries(timeLeft).map(([unit, value], index) => (
             <motion.div
@@ -194,7 +208,7 @@ export default function Countdown({ targetDate, onCountdownEnd }) {
       </div>
 
       <motion.div
-        className="text-center max-w-md mx-auto glass-card rounded-2xl p-6 relative overflow-hidden mb-6"
+        className="text-center max-w-md mx-auto glass-card rounded-2xl p-6 relative overflow-hidden mb-6 z-20"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
@@ -232,7 +246,7 @@ export default function Countdown({ targetDate, onCountdownEnd }) {
 
       {/* Start Game Button */}
       <motion.div
-        className="mt-6"
+        className="mt-6 z-20"
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.7, type: "spring", stiffness: 300, damping: 20 }}

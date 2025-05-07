@@ -12,7 +12,9 @@ export default function BirthdayCelebration() {
   const [balloons, setBalloons] = useState([])
   const [isGalleryOpen, setIsGalleryOpen] = useState(false)
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
+  const [currentImageDimensions, setCurrentImageDimensions] = useState({ width: 0, height: 0 })
   const audioRef = useRef(null)
+  const imageRef = useRef(null)
 
   const playVoiceMessage = () => {
     if (audioRef.current) {
@@ -46,6 +48,42 @@ export default function BirthdayCelebration() {
     "/images/memory-19.jpg",
     "/images/memory-20.jpg",
   ]
+
+  // Update image dimensions when image loads or changes
+  const handleImageLoad = () => {
+    if (imageRef.current) {
+      setCurrentImageDimensions({
+        width: imageRef.current.naturalWidth,
+        height: imageRef.current.naturalHeight
+      });
+    }
+  }
+
+  // Update dimensions when photo changes
+  useEffect(() => {
+    if (isGalleryOpen && imageRef.current && imageRef.current.complete) {
+      handleImageLoad();
+    }
+  }, [currentPhotoIndex, isGalleryOpen]);
+
+  // Preload the current image and adjacent images for smoother transitions
+  useEffect(() => {
+    if (isGalleryOpen) {
+      // Preload current image
+      const img = new Image();
+      img.src = photos[currentPhotoIndex];
+      
+      // Preload next image
+      const nextIndex = (currentPhotoIndex + 1) % photos.length;
+      const nextImg = new Image();
+      nextImg.src = photos[nextIndex];
+      
+      // Preload previous image
+      const prevIndex = (currentPhotoIndex - 1 + photos.length) % photos.length;
+      const prevImg = new Image();
+      prevImg.src = photos[prevIndex];
+    }
+  }, [currentPhotoIndex, isGalleryOpen, photos]);
 
   // Swipe Handlers for Carousel
   const handleSwipe = (direction) => {
@@ -521,15 +559,23 @@ export default function BirthdayCelebration() {
             transition={{ duration: 0.3 }}
           >
             <motion.div
-              className="glass-card rounded-3xl p-8 max-w-md w-full text-center relative"
+              className="glass-card rounded-3xl p-6 max-w-[90vw] max-h-[90vh] w-auto h-auto text-center relative flex flex-col items-center"
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
             >
-              {/* Carousel */}
-              <div className="relative w-full h-64">
+              {/* Carousel Container - Dynamically sized based on image ratio */}
+              <div className="relative flex justify-center items-center overflow-hidden" 
+                   style={{
+                     minHeight: '200px',
+                     maxHeight: '70vh',
+                     minWidth: '200px',
+                     maxWidth: '80vw',
+                     aspect: currentImageDimensions.width && currentImageDimensions.height ? 
+                       `${currentImageDimensions.width} / ${currentImageDimensions.height}` : 'auto'
+                   }}>
                 <motion.div
-                  className="w-full h-full overflow-hidden relative"
+                  className="w-full h-full relative"
                   drag="x"
                   dragConstraints={{ left: 0, right: 0 }}
                   onDragEnd={(e, { offset, velocity }) => {
@@ -541,51 +587,58 @@ export default function BirthdayCelebration() {
                   }}
                 >
                   <motion.img
+                    ref={imageRef}
                     key={currentPhotoIndex}
                     src={photos[currentPhotoIndex]}
                     alt={`Memory ${currentPhotoIndex + 1}`}
-                    className="w-full h-full object-cover rounded-2xl"
+                    className="w-full h-full object-contain rounded-2xl"
                     initial={{ x: 300, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: -300, opacity: 0 }}
                     transition={{ duration: 0.5 }}
+                    onLoad={handleImageLoad}
+                    onError={(e) => {
+                      console.log("Image error, using fallback");
+                      e.target.src = "/images/fallback.jpg";
+                    }}
                   />
-                  {/* Left Arrow Button - Inside Image Container */}
-                  <motion.button
-                    onClick={() => handleSwipe("right")}
-                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-transparent rounded-full text-white p-2 flex items-center justify-center"
-                    whileTap={{ scale: 0.95 }}
-                    animate={{
-                      x: [0, -5, 0],
-                      scale: [1, 1.05, 1],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                  >
-                    <ChevronLeft className="w-6 h-6" />
-                  </motion.button>
-
-                  {/* Right Arrow Button - Inside Image Container */}
-                  <motion.button
-                    onClick={() => handleSwipe("left")}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent rounded-full text-white p-2 flex items-center justify-center"
-                    whileTap={{ scale: 0.95 }}
-                    animate={{
-                      x: [0, 5, 0],
-                      scale: [1, 1.05, 1],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                  >
-                    <ChevronRight className="w-6 h-6" />
-                  </motion.button>
                 </motion.div>
+                
+                {/* Left Arrow Button */}
+                <motion.button
+                  onClick={() => handleSwipe("right")}
+                  className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 rounded-full text-white p-2 flex items-center justify-center"
+                  whileTap={{ scale: 0.95 }}
+                  animate={{
+                    x: [0, -5, 0],
+                    scale: [1, 1.05, 1],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </motion.button>
+
+                {/* Right Arrow Button */}
+                <motion.button
+                  onClick={() => handleSwipe("left")}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 rounded-full text-white p-2 flex items-center justify-center"
+                  whileTap={{ scale: 0.95 }}
+                  animate={{
+                    x: [0, 5, 0],
+                    scale: [1, 1.05, 1],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </motion.button>
               </div>
 
               {/* Photo Counter */}
@@ -593,7 +646,7 @@ export default function BirthdayCelebration() {
                 {currentPhotoIndex + 1} / {photos.length}
               </div>
 
-              {/* Close Button (Bottommost Center) */}
+              {/* Close Button */}
               <motion.button
                 onClick={() => setIsGalleryOpen(false)}
                 className="mt-6 glow-button rounded-full text-white font-bold py-2 px-4 flex items-center gap-2 relative overflow-hidden group mx-auto"

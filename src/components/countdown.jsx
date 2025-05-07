@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Heart, Gift, Cake, Star, Sparkles, PartyPopper } from "lucide-react"
 
@@ -26,6 +26,8 @@ export default function Countdown({ targetDate, onCountdownEnd }) {
   const [hasWon, setHasWon] = useState(false)
   const [score, setScore] = useState(0)
   const [balloons, setBalloons] = useState([])
+  const [userInteracted, setUserInteracted] = useState(false)
+  const videoRef = useRef(null)
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -38,7 +40,38 @@ export default function Countdown({ targetDate, onCountdownEnd }) {
     }, 1000)
 
     return () => clearTimeout(timer)
-  }, [timeLeft, targetDate])
+  }, [timeLeft, targetDate, onCountdownEnd])
+
+  // Handle user interaction to enable video autoplay
+  useEffect(() => {
+    const handleInteraction = () => {
+      setUserInteracted(true)
+      
+      // Try to play the video if the ref exists
+      if (videoRef.current) {
+        videoRef.current.play().catch(err => {
+          console.error("Failed to play video:", err)
+        })
+      }
+      
+      // Remove event listeners after first interaction
+      document.removeEventListener('click', handleInteraction)
+      document.removeEventListener('touchstart', handleInteraction)
+      document.removeEventListener('keydown', handleInteraction)
+    }
+    
+    // Add event listeners for user interaction
+    document.addEventListener('click', handleInteraction)
+    document.addEventListener('touchstart', handleInteraction)
+    document.addEventListener('keydown', handleInteraction)
+    
+    // Clean up event listeners
+    return () => {
+      document.removeEventListener('click', handleInteraction)
+      document.removeEventListener('touchstart', handleInteraction)
+      document.removeEventListener('keydown', handleInteraction)
+    }
+  }, [])
 
   // Balloon Game Logic
   useEffect(() => {
@@ -89,14 +122,62 @@ export default function Countdown({ targetDate, onCountdownEnd }) {
   return (
     <div className="flex flex-col items-center justify-center relative overflow-hidden">
       {/* Background Video */}
-      <video
-        autoPlay
+     <video
+        ref={videoRef}
         loop
-        
+  
         playsInline
         className="absolute inset-0 w-full h-full object-cover z-0 opacity-80"
         src="/your-file.mp4"
+        onError={(e) => {
+          console.error("Video playback error:", e);
+        }}
       />
+
+      {/* Video play overlay (shows until user interacts) - MODIFIED FOR SMALLER BUTTON */}
+      {!userInteracted && (
+        <div 
+          className="absolute inset-0 flex items-center justify-center bg-black/50 z-30 cursor-pointer"
+          onClick={() => {
+            setUserInteracted(true);
+            if (videoRef.current) {
+              videoRef.current.play().catch(err => {
+                console.error("Failed to play video:", err);
+              });
+            }
+          }}
+        >
+          <motion.div
+            className="bg-white/10 backdrop-blur-sm rounded-full p-4 cursor-pointer"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            animate={{
+              scale: [1, 1.1, 1],
+              opacity: [0.8, 1, 0.8],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          >
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="32" 
+              height="32" 
+              viewBox="0 0 24 24" 
+              fill="white" 
+              stroke="white" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            >
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <div className="text-white text-sm font-medium mt-1 text-center">Click to Play</div>
+          </motion.div>
+        </div>
+      )}
 
       {/* Overlay to ensure text readability */}
       <div className="absolute inset-0 bg-black/20 z-0" />

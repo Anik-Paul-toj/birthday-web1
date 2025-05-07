@@ -19,7 +19,7 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [showCandleBlowing, setShowCandleBlowing] = useState(false)
   const [showTreasureHunt, setShowTreasureHunt] = useState(false)
-  const birthdayDate = new Date("March 6, 2025")
+  const birthdayDate = new Date("June 7, 2025")
   const audioRef = useRef(null)
 
   useEffect(() => {

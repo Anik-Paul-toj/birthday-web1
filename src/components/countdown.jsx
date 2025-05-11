@@ -492,7 +492,7 @@ export default function Countdown({ targetDate, onCountdownEnd }) {
                 transition={{ delay: 0.3 }}
               >
                 <img
-                  src="https://images.unsplash.com/photo-1617299129819-74d32d76d0e6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60"
+                  src="/images/winner-photo.jpg"
                   alt="Celebratory photo"
                   className="rounded-2xl w-full max-w-xs mx-auto shadow-lg"
                 />
@@ -506,7 +506,7 @@ export default function Countdown({ targetDate, onCountdownEnd }) {
                 transition={{ delay: 0.6 }}
               >
                 <p className="text-lg text-purple-200">
-                  Amazing job, Golu Bunty! You're already a winner in my heart, but now you've conquered this game too! Here's a little sneak peek of the joy awaiting you on your special day—let's make it unforgettable! 💕
+                Congratulations, Golu Bunty! let's make more unforgettable moments together! 💕                
                 </p>
               </motion.div>
 

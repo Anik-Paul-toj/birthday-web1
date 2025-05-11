@@ -323,8 +323,8 @@ export default function BirthdayTreasureHunt({ onComplete }) {
     },
     
     {
-      text: "Answer this riddle: What has a neck but no head?",
-      hint: "It's something you wear...",
+      text: "Whom you love and hate both most but a little bit more love than hate?",
+      hint: "Think of someone special.",
       component: (
         <div className="mt-6 flex flex-col items-center">
           <motion.div 
@@ -341,10 +341,7 @@ export default function BirthdayTreasureHunt({ onComplete }) {
             />
             <motion.button
               onClick={() => {
-                if (riddleAnswer.toLowerCase().trim() === "bottle" || 
-                    riddleAnswer.toLowerCase().trim() === "a bottle" ||
-                    riddleAnswer.toLowerCase().trim() === "shirt" || 
-                    riddleAnswer.toLowerCase().trim() === "a shirt") {
+                if (riddleAnswer.toLowerCase().trim() === "anik") {
                   setMessagePieces(prev => [...prev, "Happy Birthday!"]);
                   setShowConfetti(true);
                   setTimeout(() => {

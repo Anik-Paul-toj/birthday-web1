@@ -510,7 +510,8 @@ export default function BirthdayCelebration() {
                 transition={{ delay: 0.6 }}
               >
                 <p className="text-lg text-purple-200">
-                  Congratulations, Golu Bunty! You're amazing, and I'm so proud of you for winning this game! Here's a little memory to celebrate your special day—let's make more unforgettable moments together! 💕
+                Congratulations, Golu Bunty! let's make more unforgettable moments together! 💕                
+
                 </p>
               </motion.div>
 
